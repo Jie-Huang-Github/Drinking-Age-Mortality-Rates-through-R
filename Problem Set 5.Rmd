@@ -1,0 +1,82 @@
+---
+title: "Problem set 5"
+author: "Jie Huang", "Mustafa Barez"
+date: "04/04/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+
+```{r}
+install.packages('rdd')
+library(rdd)
+library(foreign)
+deathrate=read.dta("deathrate.dta")
+deathrate
+```
+
+```{r}
+all <- deathrate$all
+age <- deathrate$agecell
+summary(all)
+summary(age)
+```
+
+```{r}
+plot(age, all, main="All Cause of Death",xlab= "Age", ylab= "Death rate from all causes")
+```
+```{r}
+rdplot=RDestimate(all~age,data=deathrate,cutpoint = 21)
+plot(rdplot)
+title(main="All Causes of Death", xlab="AGE",ylab="Death Rate")
+```
+
+```{r}
+summary(rdplot)
+```
+
+```{r}
+under21 <-filter(deathrate, agecell < 21)
+deathrateunder21 <- under21$all
+ageunder21 <- under21$agecell
+ageunder21
+cleaneddeathrateunder21 <- na.omit(deathrateunder21)
+cleaneddeathrateunder21
+```
+
+```{r}
+over21 <-filter(deathrate, agecell > 21)
+deathrateover21 <- over21$all
+cleaneddeathrateover21 <- na.omit(deathrateover21)
+cleaneddeathrateover21
+ageover21<- over21$agecell
+ageover21
+mod <- lm(deathrateunder21 ~ ageunder21 )
+summary(mod)
+plot(ageunder21,deathrateunder21, main="Scatterplot")
+abline(mod, col=2,lwd=6)
+```
+
+```{r}
+res <- t.test(cleaneddeathrateunder21,cleaneddeathrateover21)
+res
+```
+
+```{r}
+diff_in_means <- mean(cleaneddeathrateover21)-mean(cleaneddeathrateunder21)
+diff_in_means
+```
+
+```{r}
+mod <- lm(deathrateover21 ~ ageover21  )
+summary(mod)
+```
+```{r}
+plot(ageover21, deathrateover21, main="Scatterplot")
+abline(mod, col=2,lwd=6)
+```
+
